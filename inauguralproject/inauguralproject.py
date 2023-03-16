@@ -53,7 +53,7 @@ class HouseholdSpecializationModelClass:
         # a. consumption of market goods
         C = par.wM*LM + par.wF*LF
 
-        # b. home production  #UPDATED
+        # b. home production  #UPDATED ALE
         if par.sigma == 0 :
             H=min(HM,HF)
         elif par.sigma == 1 :
