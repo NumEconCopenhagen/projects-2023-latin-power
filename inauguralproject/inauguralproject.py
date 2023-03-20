@@ -1,11 +1,8 @@
-from types import SimpleNamespace
 import numpy as np
-from scipy import optimize
 import pandas as pd 
 import matplotlib.pyplot as plt
-
-
-
+from types import SimpleNamespace
+from scipy import optimize
 
 class HouseholdSpecializationModelClass:
 
@@ -54,9 +51,9 @@ class HouseholdSpecializationModelClass:
         C = par.wM*LM + par.wF*LF
 
         # b. home production  #UPDATED ALE
-        if par.sigma == 0 :
+        if par.sigma == 0.0 :
             H=min(HM,HF)
-        elif par.sigma == 1 :
+        elif par.sigma == 1.0 :
             H = HM**(1-par.alpha)*HF**par.alpha
         else:
             H = (1-par.alpha)*HM**(1-1/par.sigma) + (par.alpha)*HF**(1-1/par.sigma)
