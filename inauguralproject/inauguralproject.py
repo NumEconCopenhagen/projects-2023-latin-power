@@ -71,7 +71,7 @@ class HouseholdSpecializationModelClass:
         
         return utility - disutility  ##the utility function
 
-    def solve_discrete(self,do_print=True):
+    def solve_discrete(self,do_print=False):
         """ solve model discretely """
         
         par = self.par
