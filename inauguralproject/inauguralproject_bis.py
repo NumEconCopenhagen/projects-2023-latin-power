@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from types import SimpleNamespace
 from scipy import optimize
+import math
 
 class HouseholdSpecializationModelClass:
 
