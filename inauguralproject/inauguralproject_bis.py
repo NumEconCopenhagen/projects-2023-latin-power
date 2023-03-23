@@ -135,12 +135,21 @@ class HouseholdSpecializationModelClass:
         # d. find maximization
         ans = optimize.minimize(u, x_guess,method='trust-constr', bounds=bounds, constraints=linear_constraint)
         
+        opt.LM = ans.x[0]
+        opt.HM = ans.x[1]
+        opt.LF = ans.x[2]
+        opt.HF = ans.x[3]
+        opt.u = ans.fun
+        
         # e. print answer
         if do_print:
-            print(ans.message)
-            print(f'LM = {ans.x[0]:.0f}, HM = {ans.x[1]:.0f}, LF = {ans.x[2]:.0f}, HF = {ans.x[3]:.0f}')
-            print( f'Utility = {ans.fun:.4f}')
-    
+            # print(ans.message)
+            for k,v in opt.__dict__.items():
+                print(f'{k} = {v:6.4f}')
+        print(f'LM = {ans.x[0]:.0f}, HM = {ans.x[1]:.0f}, LF = {ans.x[2]:.0f}, HF = {ans.x[3]:.0f}')
+        print( f'Utility = {ans.fun:.4f}')
+
+        return opt
 
     def solve_wF_vec(self,discrete=False):
         """ solve model for vector of female wages """
