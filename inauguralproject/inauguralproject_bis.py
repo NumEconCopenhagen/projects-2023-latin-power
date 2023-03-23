@@ -27,7 +27,7 @@ class HouseholdSpecializationModelClass:
         # d. wages
         par.wM = 1.0
         par.wF = 1.0
-        par.wF_vec = np.linspace(0.8,1.2,5)
+        par.wF_vec = np.linspace(0.8, 1.2, num=5, endpoint=True)
 
         # e. targets
         par.beta0_target = 0.4
@@ -153,8 +153,13 @@ class HouseholdSpecializationModelClass:
 
     def solve_wF_vec(self,discrete=False):
         """ solve model for vector of female wages """
-
-        pass
+        
+        for iterator in range(0, self.par.wF_vec.size, 1):  ## solving the model for each value of wage
+            self.par.wF=self.par.wF_vec[iterator]
+            self.solve_continously()
+            print("iteration =", iterator, "wage of woman", self.par.wF, "sigma = ", self.par.sigma, "alpha = ", self.par.alpha)
+            self.sol.LM_vec[iterator]=self.LM
+            print(self.sol.LM_vec)
 
     def run_regression(self):
         """ run regression """
