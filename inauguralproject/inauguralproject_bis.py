@@ -150,24 +150,33 @@ class HouseholdSpecializationModelClass:
 
         return opt
 
-    def solve_wF_vec(self,discrete=False):
+    def solve_wF_vec(self,discrete=False,do_print=False):
         """ solve model for vector of female wages """
         
         par = self.par
         sol = self.sol
         opt = SimpleNamespace()
         
+        dic_sol_q4 = {}
+        
         for iterator in range(0, self.par.wF_vec.size, 1):  ## solving the model for each value of wage
             self.par.wF=self.par.wF_vec[iterator]
             opt = self.solve_continously()
-            print("iteration =", iterator, "wage of woman", self.par.wF, "sigma = ", self.par.sigma, "alpha = ", self.par.alpha)
+            # print("iteration =", iterator, "wage of woman", self.par.wF, "sigma = ", self.par.sigma, "alpha = ", self.par.alpha)
   
-            sol.LM_vec(iterator)=(opt.LM)
-            sol.HM_vec(iterator)=(opt.HM)
-            sol.LF_vec(iterator)=(opt.LF)
-            sol.HF_vec(iterator)=(opt.HF)
+            sol.LM_vec[iterator]=(opt.LM)
+            sol.HM_vec[iterator]=(opt.HM)
+            sol.LF_vec[iterator]=(opt.LF)
+            sol.HF_vec[iterator]=(opt.HF)
             
-        return sol.LM_vec, sol.HM_vec, sol.LF_vec, sol.HF_vec
+            dic_sol_q4[iterator] ={'wF': self.par.wF, 'wM': self.par.wM, 'LM': opt.LM, 'HM': opt.HM, 'LF': opt.LF, 'HF': opt.HF, 'logr_HF_HM': math.log(opt.HF/opt.HM), 'logr_wF_wM': math.log(self.par.wF/self.par.wM)}
+            
+            if do_print:
+            for k,v in opt.__dict__.items():
+                print(f'{k} = {v:6.4f}')
+                
+        return dic_sol_q4
+    
 
     def run_regression(self):
         """ run regression """
