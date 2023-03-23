@@ -113,36 +113,34 @@ class HouseholdSpecializationModelClass:
 
         return opt
 
-    def solve_continously(self,do_print=False):
+    
+    def solve_continously(self,do_print=True):
         """ solve model continously """
         
-        # a. calculate utility with negative since we will use minimize()
+        par = self.par
+        sol = self.sol
+        opt = SimpleNamespace()
+        
+         # a. calculate utility with negative since we will use minimize()
         def u(x):
             return -self.calc_utility(x[0],x[1],x[2],x[3])
         
         # b. constraints and bounds
-        def cons_male(x):
-            return x[0] + x[1] - 24
-        def cons_fem(x):
-            return x[2] + x[3] - 24
-        
-        cons = [{'type': 'ineq', 'fun': cons_male},
-                {'type': 'ineq', 'fun': cons_fem}]
-        
-        bounds = [(0, 25), (0, 25), (0, 25), (0, 25)]
-        
+        bounds = optimize.Bounds([0, 0, 0, 0],[25, 25, 25, 25])
+        linear_constraint = optimize.LinearConstraint([[1, 1, 0, 0], [0, 0, 1, 1]], [0, 0], [25, 25])
         
         # c. initial guess
         x_guess = np.array([0,0,0,0])
         
         # d. find maximization
-        ans = optimize.minimize(u, x_guess,method='SLSQP', bounds=bounds, constraints=cons)
+        ans = optimize.minimize(u, x_guess,method='trust-constr', bounds=bounds, constraints=linear_constraint)
         
         # e. print answer
-        print(ans.message)
-        print(ans.x)
-        print(ans.fun)
-
+        if do_print:
+            print(ans.message)
+            print(f'LM = {ans.x[0]:.0f}, HM = {ans.x[1]:.0f}, LF = {ans.x[2]:.0f}, HF = {ans.x[3]:.0f}')
+            print( f'Utility = {ans.fun:.4f}')
+    
 
     def solve_wF_vec(self,discrete=False):
         """ solve model for vector of female wages """
