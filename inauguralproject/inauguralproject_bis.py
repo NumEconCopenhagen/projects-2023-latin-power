@@ -153,6 +153,7 @@ class HouseholdSpecializationModelClass:
     def solve_wF_vec(self,discrete=False,do_print=False):
         """ solve model for vector of female wages """
         
+        
         par = self.par
         sol = self.sol
         opt = SimpleNamespace()
