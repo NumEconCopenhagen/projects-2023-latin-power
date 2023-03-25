@@ -1,9 +1,9 @@
-# \[Group name\]
+# Latin Power
 
 **Group members:**
-- A
-- B
-- C
+- Rodrigo Villegas Gomez
+- Philip Charoensak Ladefoged
+- Alejandra Prada Mora
 
 This repository contains  
 1. Inaugural project. 
