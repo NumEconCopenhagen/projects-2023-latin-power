@@ -1,4 +1,4 @@
-# \[Group name\]
+# Latin Power
 
 **Group members:**
 - Rodrigo Villegas Gomez
