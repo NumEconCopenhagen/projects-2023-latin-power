@@ -55,23 +55,23 @@ class HouseholdSpecializationModelClass:
         C = par.wM*LM + par.wF*LF
 
         # b. home production  #UPDATED ALE
-        if par.sigma == 0.0 :
+        if np.isclose(par.sigma,0.0,atol=1.e-10) :
             H=min(HM,HF)
-        elif par.sigma == 1.0 :
+        elif np.isclose(par.sigma,1.0,atol=1.e-10) :
             H = HM**(1-par.alpha)*HF**par.alpha
         else:
-            H = (1-par.alpha)*HM**(1-1/par.sigma) + (par.alpha)*HF**(1-1/par.sigma)
+            H = ((1-par.alpha)*HM**(1-1/par.sigma) + (par.alpha)*HF**(1-1/par.sigma))**(par.sigma/(par.sigma-1))
 
 
         # c. total consumption utility
         Q = C**par.omega*H**(1-par.omega)
-        utility = np.fmax(Q,1e-8)**(1-par.rho)/(1-par.rho)
+        utility = (np.fmax(Q,1e-8)**(1-par.rho))/(1-par.rho)
 
         # d. disutlity of work
         epsilon_ = 1+1/par.epsilon
         TM = LM+HM
         TF = LF+HF
-        disutility = par.nu*(TM**epsilon_/epsilon_+TF**epsilon_/epsilon_)
+        disutility = par.nu*((TM**epsilon_)/epsilon_+(TF**epsilon_)/epsilon_)
         
         return utility - disutility  ##the utility function
 
