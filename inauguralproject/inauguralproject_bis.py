@@ -18,7 +18,8 @@ class HouseholdSpecializationModelClass:
         par.rho = 2.0
         par.nu = 0.001
         par.epsilon = 1.0
-        par.omega = 0.5 
+        par.omega = 0.5
+        par.stigma=0.1 #new parameter for question 5
 
         # c. household production
         par.alpha = 0.5
@@ -150,30 +151,6 @@ class HouseholdSpecializationModelClass:
     
     def solve_wF_vec(self,discrete=False,do_print=False):
         """ solve model for vector of female wages """
-        ### Old code
-        #par = self.par
-        #sol = self.sol
-        #opt = SimpleNamespace()
-
-        #dic_sol_q4 = {}
-
-        #for iterator in range(0, self.par.wF_vec.size, 1): 
-            ## solving the model for each value of wage
-            #self.par.wF=self.par.wF_vec[iterator]
-            #opt = self.solve_continously()
-            # print("iteration =", iterator, "wage of woman", self.par.wF, "sigma = ", self.par.sigma, "alpha = ", self.par.alpha)
-
-            #sol.LM_vec[iterator]=(opt.LM)
-            #sol.HM_vec[iterator]=(opt.HM)
-            #sol.LF_vec[iterator]=(opt.LF)
-            #sol.HF_vec[iterator]=(opt.HF)
-
-            #dic_sol_q4[iterator] ={'wF': self.par.wF, 'wM': self.par.wM, 'LM': opt.LM, 'HM': opt.HM, 'LF': opt.LF, 'HF': opt.HF, 'logr_HF_HM': math.log(opt.HF/opt.HM), 'logr_wF_wM': math.log(self.par.wF/self.par.wM)}
-
-        #if do_print:
-            #for k,v in opt.__dict__.items():
-                #print(f'{k} = {v:6.4f}')
-        
 
         ### Philips new code
         par = self.par
@@ -195,7 +172,6 @@ class HouseholdSpecializationModelClass:
         #Return statement above so that it can be executed
         return sol
 
-
     def run_regression(self,do_print=False):
         """ run regression """
 
@@ -206,8 +182,67 @@ class HouseholdSpecializationModelClass:
         y = np.log(sol.HF_vec/sol.HM_vec)
         A = np.vstack([np.ones(x.size),x]).T
         sol.beta0,sol.beta1 = np.linalg.lstsq(A,y,rcond=None)[0]
-    
-    def estimate(self,alpha=None,sigma=None):
-        """ estimate alpha and sigma """
 
-        pass
+    def calc_utility_new(self,LM,HM,LF,HF):
+        """ calculate utility """
+
+        par = self.par
+        sol = self.sol
+
+        # a. consumption of market goods
+        C = par.wM*LM + (1-par.stigma)*par.wF*LF
+
+        # b. home production  #UPDATED ALE
+        if np.isclose(par.sigma,0.0,atol=1.e-10) :
+            H=min(HM,HF)
+        elif np.isclose(par.sigma,1.0,atol=1.e-10) :
+            H = HM**(1-par.alpha)*HF**par.alpha
+        else:
+            H = ((1-par.alpha)*HM**(1-1/par.sigma) + (par.alpha)*HF**(1-1/par.sigma))**(par.sigma/(par.sigma-1))
+
+
+        # c. total consumption utility
+        Q = C**par.omega*H**(1-par.omega)
+        utility = (np.fmax(Q,1e-8)**(1-par.rho))/(1-par.rho)
+
+        # d. disutlity of work
+        epsilon_ = 1+1/par.epsilon
+        TM = LM+HM
+        TF = LF+HF
+        disutility = par.nu*((TM**epsilon_)/epsilon_+(TF**epsilon_)/epsilon_)
+        
+        return utility - disutility ##the utility function
+
+    def solve_continously_new(self,do_print=False):
+        """ solve model continously """
+
+        par = self.par
+        sol = self.sol
+        opt_new = SimpleNamespace()
+
+        # a. calculate utility with negative since we will use minimize()
+        def u_new(x):
+             return -self.calc_utility_new(x[0],x[1],x[2],x[3])
+
+        # b. constraints and bounds
+        bounds = optimize.Bounds([0, 0, 0, 0],[25, 25, 25, 25])
+        linear_constraint = optimize.LinearConstraint([[1, 1, 0, 0], [0, 0, 1, 1]], [0, 0], [25, 25])
+
+        # c. initial guess
+        x_guess = np.array([0,0,0,0])
+
+        # d. find maximization
+        ans_new = optimize.minimize(u_new, x_guess,method='trust-constr', bounds=bounds, constraints=linear_constraint)
+
+        opt_new.LM = ans_new.x[0]
+        opt_new.HM = ans_new.x[1]
+        opt_new.LF = ans_new.x[2]
+        opt_new.HF = ans_new.x[3]
+        opt_new.u = ans_new.fun
+
+        # e. print answer
+        if do_print:
+            for k,v in opt_new.__dict__.items():
+                print(f'{k} = {v:6.4f}')
+       
+        return opt_new
