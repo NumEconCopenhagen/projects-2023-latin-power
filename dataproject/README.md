@@ -6,8 +6,8 @@ The **results** of the project can be seen from running [dataproject.ipynb](data
 
 We apply the **following datasets**:
 
-1. criminalitydata.xlsx (*source*) 
-2. population.xlsx (*source*)
+1. criminalitydata.xlsx (*https://www.statbank.dk/statbank5a/SelectTable/omrade0.asp?SubjectCode=4&PLanguage=1&ShowNews=OFF*) 
+2. population.xlsx (*https://www.statbank.dk/statbank5a/SelectTable/omrade0.asp?SubjectCode=1&PLanguage=1&ShowNews=OFF*)
 
 **Dependencies:** Apart from a standard Anaconda Python 3 installation, the project requires the following installations:
 
