@@ -124,7 +124,7 @@ class HumanCapitalModelClass:
         
         opt.S0 = S0[j]
         opt.S1 = S1[j]
-        opt.u = v[j]
+        opt.v = v[j]
 
         # e. print
         if do_print:
@@ -156,7 +156,7 @@ class HumanCapitalModelClass:
 
         opt.S0 = ans.x[0]
         opt.S1 = ans.x[1]
-        opt.u = -ans.fun
+        opt.v = -ans.fun
 
         # e. print answer
         if do_print:
