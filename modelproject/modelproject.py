@@ -33,11 +33,11 @@ class HumanCapitalModelClass:
         par.A = 1.0
         par.E = 1.0
         par.H0 = 1.0
-        par.B0 = 0.5
+        par.B0 = 0.5 #Present and future wages are equal
         par.B1 = 0.5
-        par.rho = 0.0025
+        par.rho = 0.0025 #Low patience
         par.gama= 1.0
-        par.delta=0.0
+        par.delta=0.0 #Human Capital does not change over time
         par.alpha=0.5
 
         # c. household production
@@ -75,7 +75,7 @@ class HumanCapitalModelClass:
         H1 = par.H0*(1-par.delta)+(par.A*par.H0*par.E*S0)**par.alpha
 
         # b. benefit of schooling in time t
-        u0 = par.B0*par.H0*(1-S0)
+        u0 = par.B0*par.H0*(1-S0) 
 
         # c. cost of schooling in time t
         c0=par.gama*S0
@@ -124,6 +124,7 @@ class HumanCapitalModelClass:
         
         opt.S0 = S0[j]
         opt.S1 = S1[j]
+        opt.u = v[j]
 
         # e. print
         if do_print:
@@ -141,23 +142,21 @@ class HumanCapitalModelClass:
 
         # a. calculate utility with negative since we will use minimize()
         def u(x):
-             return -self.calc_utility(x[0],x[1],x[2],x[3])
+             return -self.calc_utility(x[0],x[1])
 
         # b. constraints and bounds
-        bounds = optimize.Bounds([0, 0, 0, 0],[25, 25, 25, 25])
-        linear_constraint = optimize.LinearConstraint([[1, 1, 0, 0], [0, 0, 1, 1]], [0, 0], [25, 25])
+        bounds = optimize.Bounds([0, 0],[1, 1])
+        #linear_constraint = optimize.LinearConstraint([[ 0, 0], [0, 0, 1, 1]], [0, 0], [25, 25])
 
         # c. initial guess
-        x_guess = np.array([0,0,0,0])
+        x_guess = np.array([0.5,0.5])
 
         # d. find maximization
-        ans = optimize.minimize(u, x_guess,method='trust-constr', bounds=bounds, constraints=linear_constraint)
+        ans = optimize.minimize(u, x_guess, method="SLSQP", bounds=bounds)
 
-        opt.LM = ans.x[0]
-        opt.HM = ans.x[1]
-        opt.LF = ans.x[2]
-        opt.HF = ans.x[3]
-        opt.u = ans.fun
+        opt.S0 = ans.x[0]
+        opt.S1 = ans.x[1]
+        opt.u = -ans.fun
 
         # e. print answer
         if do_print:
