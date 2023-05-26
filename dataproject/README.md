@@ -1,6 +1,6 @@
 # Data analysis project
 
-Our project is titled **Crime rate in Denmark** and is about how the criminality rate per 100.000 inhabitants has change over time by municipality. To caculate this rate, we use the criminal events and population. The main output is an interactive map.
+Our project is titled **Crime rate in Denmark** and is about how the criminality rate per 100.000 inhabitants has change over time by municipality. To calculate this rate, we use the criminal events and population. The main output is an interactive map.
 
 The **results** of the project can be seen from running [dataproject.ipynb](dataproject.ipynb).
 
