@@ -15,7 +15,7 @@ Question 3: This point has a loop to calculate the utility for each value of fem
 
 Question 4: This point defines a function that finds alpha and sigma such that it minimizes the sum of squared residuals. The method used is “Nelder-Mead”.
 
-Question 5: Omitted (no compulsory)
+Question 5: We include a estigma parameter which represents discrimination.
 
 
 Dependencies: Apart from a standard Anaconda Python 3 installation, the project requires no further packages.
